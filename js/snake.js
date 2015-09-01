@@ -46,7 +46,7 @@
     }
 
     var newDir = this.makeToughChoices();
-    
+
     var output = "83";
     [65, 68, 83, 87].forEach(function (key) {
       if (this.keybinds[key].equals(newDir)) { output = key.toString(); }
@@ -64,18 +64,37 @@
     var rightCount = 0;
 
     var leftCoord = this.seg[this.seg.length - 1].plus(left);
-    while (!this.checkCollision(leftCoord)) {
+    while (!this.checkCollisionButDontKill(leftCoord)) {
       leftCount += 1;
       leftCoord = leftCoord.plus(left);
     }
 
     var rightCoord = this.seg[this.seg.length - 1].plus(right);
-    while (!this.checkCollision(rightCoord)) {
+    while (!this.checkCollisionButDontKill(rightCoord)) {
       rightCount += 1;
       rightCoord = rightCoord.plus(right);
     }
 
     if (leftCount > rightCount) { return left; } else { return right; }
+  };
+
+  Snake.prototype.checkCollisionButDontKill = function (coord) {
+    if ( coord.pos[1] > SNAKE.DIM_X - 1 ||
+         coord.pos[0] > SNAKE.DIM_Y - 1 ||
+         coord.pos[1] < 0 ||
+         coord.pos[0] < 0
+       ) { return true; }
+
+     var enemyHead = this.enemy.seg[this.enemy.seg.length -1];
+     if (coord.equals(enemyHead)) {
+       return true;
+     } else if (this.segContains(coord)) {
+       return true;
+     } else if (this.enemy.segContains(coord)) {
+       return true;
+     }
+
+    return false;
   };
 
   Snake.prototype.checkCollision = function (coord) {
