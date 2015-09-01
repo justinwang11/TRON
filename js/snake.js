@@ -41,7 +41,7 @@
     var randMoveDie = Math.floor((Math.random() * 20) + 1);
 
     var currentDir = this.seg[this.seg.length - 1].plus(this.keybinds[this.dir]);
-    if (!this.checkCollision(currentDir) && randMoveDie !== 5) {
+    if (!this.checkCollisionButDontKill(currentDir) && randMoveDie !== 5) {
       return this.dir;
     }
 
