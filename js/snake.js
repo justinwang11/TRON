@@ -59,39 +59,51 @@
   };
 
   Snake.prototype.makeToughChoices = function () {
-    var dir = this.keybinds[this.dir];
-    var back = new Coord([-dir.pos[0], -dir.pos[1]]);
-    var left = new Coord([dir.pos[1], dir.pos[0]]);
-    var right = new Coord([-dir.pos[1], -dir.pos[0]]);
-    var leftCount = 0;
-    var leftSweep = 0;
-    var rightCount = 0;
-    var rightSweep = 0;
+      var dir = this.keybinds[this.dir];
+      var back = new Coord([-dir.pos[0], -dir.pos[1]]);
+      var left = new Coord([-dir.pos[1], -dir.pos[0]]);
+      var right = new Coord([dir.pos[1], dir.pos[0]]);
+      var leftCount = 0;
+      var leftSweep = 0;
+      var rightCount = 0;
+      var rightSweep = 0;
 
-    var leftCoord = this.seg[this.seg.length - 1].plus(left);
-    while (this.checkCollision(leftCoord) === 0) {
-      leftCount += 1;
-      leftCoord = leftCoord.plus(left);
-    }
-    leftCoord = leftCoord.plus(right);
-    while (this.checkCollision(leftCoord) === 0) {
-      leftSweep += 1;
-      leftCoord = leftCoord.plus(back);
-    }
+      var leftCoord = this.seg[this.seg.length - 1].plus(left);
+      while (this.checkCollision(leftCoord) === 0) {
+        var leftBack = leftCoord.plus(back);
+        while (this.checkCollision(leftBack) === 0) {
+          leftSweep += 1;
+          leftBack = leftBack.plus(back);
+        }
 
-    var rightCoord = this.seg[this.seg.length - 1].plus(right);
-    while (this.checkCollision(rightCoord) === 0) {
-      rightCount += 1;
-      rightCoord = rightCoord.plus(right);
-    }
-    rightCoord = rightCoord.plus(left);
-    while (this.checkCollision(rightCoord) === 0) {
-      rightSweep += 1;
-      rightCoord = rightCoord.plus(back);
-    }
+        var leftForw = leftCoord.plus(dir);
+        while (this.checkCollision(leftForw) === 0) {
+          leftSweep += 1;
+          leftForw = leftForw.plus(dir);
+        }
 
-    if (leftCount * leftSweep > rightCount * rightSweep) { return left; } else { return right; }
-  };
+        leftCoord = leftCoord.plus(left);
+      }
+
+      var rightCoord = this.seg[this.seg.length - 1].plus(right);
+      while (this.checkCollision(rightCoord) === 0) {
+        var rightBack = rightCoord.plus(back);
+        while (this.checkCollision(rightBack) === 0) {
+          rightSweep += 1;
+          rightBack = rightBack.plus(back);
+        }
+
+        var rightForw = rightCoord.plus(back);
+        while (this.checkCollision(rightForw) === 0) {
+          rightSweep += 1;
+          rightForw = rightForw.plus(dir);
+        }
+
+        rightCoord = rightCoord.plus(right);
+      }
+
+      if (leftSweep > rightSweep) { return left; } else { return right; }
+    };
 
   Snake.prototype.checkCollision = function (coord) {
     if ( coord.pos[1] > SNAKE.DIM_X - 1 ||
